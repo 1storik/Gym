@@ -1,0 +1,153 @@
+﻿@using Gym.Utility
+@model Gym.VM.ClientMembershipVM
+
+@section scripts
+{
+    <style>
+        .enlarge-on-hover:hover {
+            box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.75);
+            cursor: pointer;
+        }
+    </style>
+}
+
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Client Details</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <img src="@WC.ImagePathClient@Model.Client.Image" alt="Card image cap" class="img-fluid rounded enlarge-on-hover" data-toggle="modal" data-target="#imageModal">
+                </div>
+                <div class="col-md-6">
+                    <h4 class="card-title">@Model.Client.FirstName @Model.Client.LastName</h4>
+                    <p class="card-text">Gender: @Model.Client.Gender</p>
+                    <p class="card-text">Date of Birth: @Model.Client.DateOfBirth.ToString("dd.MM.yyyy")</p>
+                    <p class="card-text">Phone: @Model.Client.Phone</p>
+                    <p class="card-text">Email: @Model.Client.Email</p>
+                    <p class="card-text">Registration Date: @Model.Client.RegistrationDate.ToString("dd.MM.yyyy")</p>
+                    <p class="card-text" style="color: @(Model.Client.Presence ? "green" : "red")">
+                        Presence: @(Model.Client.Presence ? "Present" : "Absent")
+                        @if (Model.Client.Presence)
+                        {
+                            <span>(Locker Number: @Model.Client.NumberOfShelf)</span>
+                        }
+                    </p>
+                    <div class="btn-group mt-5">
+                        <a asp-controller="Client" asp-action="Edit" asp-route-Id="@Model.Client.Id" class="btn btn-primary mx-2">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a asp-controller="Client" asp-action="Delete" asp-route-Id="@Model.Client.Id" class="btn btn-danger mx-2">
+                            <i class="far fa-trash-alt"></i> Delete
+                        </a>
+                        <form method="post" asp-action="TogglePresence" asp-route-Id="@Model.Client.Id">
+                            <button type="submit" class="btn btn-success mx-2">
+                                <i class="fas fa-toggle-on"></i> Presence
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="post-details mt-2 d-flex justify-content-between">
+                <span class="align-self-start">Client ID: @Model.Client.Id</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <img src="@WC.ImagePathClient@Model.Client.Image" alt="Client Image" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Client Memberships</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12">
+                    @if (Model.ClientMemberships != null && Model.ClientMemberships.Any())
+                    {
+                        <table class="table table-bordered table-striped" style="width:100%">
+                            <thead>
+                            <tr>
+                                <th>Membership Type</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Action</th> 
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var membership in Model.ClientMemberships)
+                            {
+                                if (membership.Subscription.Find(s => s.ClientId == Model.Client.Id).EndDate >= DateTime.Now)
+                                {
+                                    <tr>
+                                        <td width="30%">@membership.MembershipType</td>
+                                        <td width="25%">@DateHelper.FormatDate(membership.Subscription.Find(s => s.ClientId == Model.Client.Id)!.StartDate)</td>
+                                        <td width="25%">@DateHelper.FormatDate(membership.Subscription.Find(s => s.ClientId == Model.Client.Id)!.EndDate)</td>
+                                        <td width="20%">
+                                            <div class="w-75 btn-group" role="group">
+                                                <form method="post" asp-action="RemoveToMembership">
+                                                    <input type="hidden" name="clientId" value="@Model.Client.Id"/>
+                                                    <input type="hidden" name="membershipId" value="@membership.Id"/>
+                                                    <button type="submit" class="btn btn-danger mx-2">Remove</button>
+                                                </form>
+                                                @if (membership.Subscription.Find(s => s.ClientId == Model.Client.Id)!.Freeze)
+                                                {
+                                                    <form method="post" asp-action="UnfreezeMembership">
+                                                        <input type="hidden" name="clientId" value="@Model.Client.Id"/>
+                                                        <input type="hidden" name="membershipId" value="@membership.Id"/>
+                                                        <button type="submit" class="btn btn-primary mx-2">Unfreeze</button>
+                                                    </form>
+                                                }
+                                                else
+                                                {
+                                                    <form method="post" asp-action="FreezeMembership">
+                                                        <input type="hidden" name="clientId" value="@Model.Client.Id"/>
+                                                        <input type="hidden" name="membershipId" value="@membership.Id"/>
+                                                        <button type="submit" class="btn btn-success mx-2">Freeze</button>
+                                                    </form>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>No current memberships.</p>
+                    }
+                    <h4>Add Client to Membership</h4>
+                    <form method="post" asp-action="AddToMembership">
+                        <input type="hidden" name="ClientId" value="@Model.Client.Id" />
+                        <div class="form-group">
+                            <label for="MembershipId">Select Membership:</label>
+                            <select class="form-control" id="MembershipId" name="MembershipId">
+                                @foreach (var membership in Model.OtherMemberships)
+                                {
+                                    <option value="@membership.Id">@membership.MembershipType</option>
+                                }
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success">Add to Membership</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

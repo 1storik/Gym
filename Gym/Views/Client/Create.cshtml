@@ -1,0 +1,96 @@
+﻿@model Gym.VM.ClientVM
+
+<form method="post" asp-action="Create" enctype="multipart/form-data">
+    <div class="border p-3 bg-white">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group row">
+            <h2 class="text-info pl-3">Add Client</h2>
+        </div>
+        <div class="row">
+            <div class="col-8">
+                <div class="form-group row py-2">
+                    <div class="col-4">
+                        <label asp-for="Client.FirstName"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="Client.FirstName" class="form-control" />
+                        <span asp-validation-for="Client.FirstName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row py-2">
+                    <div class="col-4">
+                        <label asp-for="Client.LastName"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="Client.LastName" class="form-control" />
+                        <span asp-validation-for="Client.LastName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row py-2">
+                    <div class="col-4">
+                        <label asp-for="Client.Phone"></label>
+                    </div>
+                    <div class="col-8">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">+380</span>
+                            </div>
+                            <input asp-for="Client.Phone" id="Phone" class="form-control"/>
+                        </div>
+                        <span asp-validation-for="Client.Phone" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group row py-2">
+                    <div class="col-4">
+                        <label asp-for="Client.Email"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="Client.Email" class="form-control" />
+                        <span asp-validation-for="Client.Email" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row py-2">
+                    <div class="col-4">
+                        <label asp-for="Client.DateOfBirth"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="Client.DateOfBirth" class="form-control" type="date" />
+                        <span asp-validation-for="Client.DateOfBirth" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group row py-2">
+                    <div class="col-4">
+                        <label asp-for="Client.Gender"></label>
+                    </div>
+                    <div class="col-8">
+                        <select asp-for="Client.Gender" asp-items="@Model.genderList" class="form-select">
+                            <option disabled selected>--Select Type--</option>
+                        </select>
+                        <span asp-validation-for="Client.Gender" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row py-2">
+                    <div class="col-4">
+                        Image
+                    </div>
+                    <div class="col-8">
+                        <input type="file" name="files" id="uploadBox1" multiple class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group row py-2">
+                    <div class="col-8 offset-4 row">
+
+                        <div class="col">
+                            <input type="submit" class="btn btn-info w-100" value="Create" />
+                        </div>
+                        <div class="col">
+                            <a asp-action="Index" class="btn btn-success w-100"><i class="fas fa-sign-out-alt"></i> Back</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

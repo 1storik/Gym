@@ -1,0 +1,50 @@
+﻿@using Gym.Utility
+
+<div class="container">
+    <div class="row mt-4">
+        <div class="col">
+            <a asp-controller="Client" asp-action="Create" class="btn btn-primary"><i class="fas fa-edit"></i> Add client</a>
+        </div>
+    </div>
+
+    <div class="row mb-4 mt-4">
+        <div class="col">
+            <form method="get" action="@Url.Action("Index", "Client")">
+                <div class="input-group">
+                    <input type="text" name="searchTerm" class="form-control" placeholder="Search by name or phone">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row row-cols-2">
+        @foreach (var client in Model)
+        {
+            <div class="col">
+                <div class="card">
+                    <a href="@Url.Action("Details", "Client", new { id = client.Id })">
+                        <img class="card-img-top" src="@WC.ImagePathClient@client.Image" alt="Post Image">
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">@client.FirstName @client.LastName</h5>
+                        <p class="card-text">@client.RegistrationDate</p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="post-details mt-2 d-flex justify-content-around">
+                            <span class="align-self-start">Email: @client.Email</span>
+                            <span class="align-self-center">Phone: @client.Phone</span>
+                            @if (client.Presence)
+                            {
+                                <span class="align-self-end text-success">Present</span>
+                            }
+                            else
+                            {
+                                <span class="align-self-end text-danger">Absent</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
